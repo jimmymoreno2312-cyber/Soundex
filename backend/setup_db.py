@@ -1,5 +1,4 @@
 import os
-
 import mysql.connector
 from dotenv import load_dotenv
 
@@ -25,14 +24,28 @@ cur.execute("""
 """)
 
 cur.execute("""
-    CREATE TABLE IF NOT EXISTS Reviews (
+    CREATE TABLE IF NOT EXISTS Sessions (
+        token VARCHAR(64) PRIMARY KEY,
+        user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES Users(id)
+    )
+""")
+
+cur.execute("DROP TABLE IF EXISTS Reviews")
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS Ratings (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         album_mbid VARCHAR(36) NOT NULL,
-        rating INT NOT NULL,
-        body TEXT,
+        score INT NOT NULL,
+        body TEXT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES Users(id)
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE (user_id, album_mbid),
+        FOREIGN KEY (user_id) REFERENCES Users(id),
+        CHECK (score BETWEEN 0 AND 100)
     )
 """)
 
