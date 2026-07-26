@@ -14,4 +14,8 @@ export async function register({ username, email, password }) {
   });
 }
 
+export async function logout() {
+  return request('/auth/logout', { method: 'POST', auth: true });
+}
+
 export { setToken, clearToken };

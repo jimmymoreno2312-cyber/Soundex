@@ -4,7 +4,10 @@ import mysql.connector
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from passlib.hash import bcrypt
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+from functools import wraps
+ 
 
 load_dotenv()
 
@@ -18,6 +21,43 @@ def get_db_connection():
         password=os.environ["MYSQL_PASSWORD"],
         database=os.environ["MYSQL_DATABASE"],
     )
+
+def create_session(cur, user_id):
+    cur.execute("DELETE FROM Sessions WHERE expires_at < NOW()")
+    token = secrets.token_hex(32)
+    expires_at = datetime.now() + timedelta(hours=24)
+    cur.execute(
+        "INSERT INTO Sessions (token, user_id, expires_at) VALUES (%s, %s, %s)",
+        (token, user_id, expires_at),
+    )
+    return token
+
+def get_token_from_header():
+    token = request.headers.get("Authorization", "")
+    if not token.startswith("Bearer "):
+        return None
+    return token[len("Bearer "):]
+
+def auth_required(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        token = get_token_from_header()
+        if not token:
+            return jsonify({"message": "Missing bearer token"}), 401
+
+        conn = get_db_connection()
+        cur = conn.cursor(dictionary=True)
+        try:
+            cur.execute("SELECT user_id FROM Sessions WHERE token = %s AND expires_at > NOW()", (token,))
+            session = cur.fetchone()
+            if not session:
+                return jsonify({"message": "Invalid or expired token"}), 401
+
+            return f(current_user_id = session["user_id"],*args, **kwargs)
+        finally:
+            cur.close()
+            conn.close()
+    return decorator
 
 @app.route("/api/auth/register", methods=["POST"])
 def register():
@@ -37,23 +77,17 @@ def register():
         cur.execute("SELECT id FROM Users WHERE username = %s", (username,))
         if cur.fetchone():
             return jsonify({"message": "Username is already taken"}), 409
-
         cur.execute("SELECT id FROM Users WHERE email = %s", (email,))
         if cur.fetchone():
             return jsonify({"message": "Email is already registered"}), 409
 
-        password_hash = bcrypt.hash(password)
+        password_hash = generate_password_hash(password)
         cur.execute(
             "INSERT INTO Users (username, email, password_hash) VALUES (%s, %s, %s)",
             (username, email, password_hash),
         )
         user_id = cur.lastrowid
-
-        token = secrets.token_hex(32)
-        cur.execute(
-            "INSERT INTO Sessions (token, user_id) VALUES (%s, %s)",
-            (token, user_id),
-        )
+        token = create_session(cur, user_id)
         conn.commit()
 
         cur.execute(
@@ -88,20 +122,33 @@ def login():
         )
         user = cur.fetchone()
 
-        if not user or not bcrypt.verify(password, user["password_hash"]):
+        if not user or not check_password_hash(user["password_hash"], password):
             return jsonify({"message": "Invalid username/email or password"}), 401
 
-        token = secrets.token_hex(32)
-        cur.execute(
-            "INSERT INTO Sessions (token, user_id) VALUES (%s, %s)",
-            (token, user["id"]),
-        )
+        token = create_session(cur, user["id"])
         conn.commit()
 
         user.pop("password_hash")
         user["created_at"] = user["created_at"].isoformat()
 
         return jsonify({"token": token, "user": user}), 200
+    finally:
+        cur.close()
+        conn.close()
+
+
+@app.route("/api/auth/logout", methods=["POST"])
+def logout():
+    token = get_token_from_header()
+    if not token:
+        return jsonify({"message": "Missing bearer token"}), 401
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM Sessions WHERE token = %s", (token,))
+        conn.commit()
+        return jsonify({"message": "Logged out"}), 200
     finally:
         cur.close()
         conn.close()
