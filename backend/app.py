@@ -2,9 +2,9 @@ import os
 import secrets
 import mysql.connector
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, g
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
+from passlib.hash import bcrypt
 from datetime import datetime, timedelta
 from functools import wraps
  
@@ -48,15 +48,31 @@ def auth_required(f):
         conn = get_db_connection()
         cur = conn.cursor(dictionary=True)
         try:
-            cur.execute("SELECT user_id FROM Sessions WHERE token = %s AND expires_at > NOW()", (token,))
-            session = cur.fetchone()
-            if not session:
+            cur.execute("SELECT user_id, role FROM Sessions JOIN Users ON Sessions.user_id = Users.id WHERE token = %s AND expires_at > NOW()", (token,))
+            current_user = cur.fetchone()
+            if not current_user:
                 return jsonify({"message": "Invalid or expired token"}), 401
-
-            return f(current_user_id = session["user_id"],*args, **kwargs)
+            g.current_user = current_user
+            return f(*args, **kwargs)
         finally:
             cur.close()
             conn.close()
+    return decorator
+
+def require_role(*allowed_roles):
+    # Must be stacked under @auth_required (applied above it in source, so
+    # it runs after) — relies on current_user_id already being resolved.
+    def decorator(f):
+        @wraps(f)
+        def decorator_function(*args, **kwargs):
+            if not hasattr(g, "current_user"):
+                return jsonify({"message": "Login required"}), 401
+            user = g.current_user
+            if user["role"] not in allowed_roles:
+                return jsonify({"message": "You don't have permission"}), 403
+
+            return f(*args, **kwargs)
+        return decorator_function
     return decorator
 
 @app.route("/api/auth/register", methods=["POST"])
@@ -81,7 +97,7 @@ def register():
         if cur.fetchone():
             return jsonify({"message": "Email is already registered"}), 409
 
-        password_hash = generate_password_hash(password)
+        password_hash = bcrypt.hash(password)
         cur.execute(
             "INSERT INTO Users (username, email, password_hash) VALUES (%s, %s, %s)",
             (username, email, password_hash),
@@ -122,7 +138,7 @@ def login():
         )
         user = cur.fetchone()
 
-        if not user or not check_password_hash(user["password_hash"], password):
+        if not user or not bcrypt.verify(password, user["password_hash"]):
             return jsonify({"message": "Invalid username/email or password"}), 401
 
         token = create_session(cur, user["id"])
