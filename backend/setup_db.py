@@ -28,6 +28,7 @@ cur.execute("""
         token VARCHAR(64) PRIMARY KEY,
         user_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP NOT NULL,
         FOREIGN KEY (user_id) REFERENCES Users(id)
     )
 """)
@@ -46,6 +47,28 @@ cur.execute("""
         UNIQUE (user_id, album_mbid),
         FOREIGN KEY (user_id) REFERENCES Users(id),
         CHECK (score BETWEEN 0 AND 100)
+    )
+""")
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS Lists (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(150) NOT NULL,
+        description TEXT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES Users(id)
+    )
+""")
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS ListItems (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        list_id INT NOT NULL,
+        album_mbid VARCHAR(36) NOT NULL,
+        position INT NOT NULL,
+        UNIQUE (list_id, album_mbid),
+        FOREIGN KEY (list_id) REFERENCES Lists(id)
     )
 """)
 
