@@ -40,7 +40,12 @@ export function AuthProvider({ children }) {
     [persist]
   );
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // best-effort — clear local state regardless of backend result
+    }
     authApi.clearToken();
     localStorage.removeItem(USER_KEY);
     setUser(null);
