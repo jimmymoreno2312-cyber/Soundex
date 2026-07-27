@@ -11,6 +11,6 @@ requests==2.34.2                 #to connect to MusicBrainz
 Flask
 Flask-Cors
 mysql-connector-python
-passlib[decrypt]
+passlib[bcrypt]
 python-dotenv
 >>>>>>> 252a8d1 (Updated README (removed references to MusicBrainz and included installation instructions); added backend dependencies)
