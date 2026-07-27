@@ -1,7 +1,6 @@
 #docker compose file
 
 services:
-
   #mysql service
   mysql:
     #version
@@ -25,6 +24,7 @@ services:
       #volume for storage
       - mysql_data:/var/lib/mysql
 
+  #backend
   backend:
     build: ./backend
 
@@ -44,7 +44,7 @@ services:
     #use dockerfile
     build: .
 
-    ports: 
+    ports:
       #ports
       - "3000:5173"
 
