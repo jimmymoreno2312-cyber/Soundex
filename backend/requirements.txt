@@ -1,16 +1,5 @@
-<<<<<<< HEAD
-#In here, put what we need to run
-
-#most recent versions of each
-Flask==3.1.3
-Flask-Cors==6.0.5                #allows it to accept from frontend
-mysql-connector-python==9.7.0    
-requests==2.34.2                 #to connect to MusicBrainz
-
-=======
 Flask
 Flask-Cors
 mysql-connector-python
 passlib[bcrypt]
 python-dotenv
->>>>>>> 252a8d1 (Updated README (removed references to MusicBrainz and included installation instructions); added backend dependencies)
