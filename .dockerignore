@@ -1,0 +1,6 @@
+#things to ignore for frontend docker
+
+#don't copy node_modules folder or Vite build folders (will be created upon execution)
+node_modules/
+dist/
+  
