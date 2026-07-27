@@ -1,4 +1,4 @@
-#yuewyriuywueyr
+#docker compose file
 
 services:
 
@@ -12,7 +12,7 @@ services:
     
     environment:
       #sets password, makes database, make database user and password
-      MSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: musicdb
       MYSQL_USER: appuser
       MYSQL_PASSWORD: password
