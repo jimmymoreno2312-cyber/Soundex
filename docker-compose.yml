@@ -31,11 +31,11 @@ services:
 
     ports:
       #port
-        -"5001:5001"
+        - "5001:5001"
 
     depends_on:
       #start mysql container first
-        -my_sql
+        - my_sql
 
     environment:
       #host is mysql, have user and password, uses musicdb
