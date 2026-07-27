@@ -29,7 +29,7 @@ services:
       MYSQL_HOST: mysql
       MYSQL_USER: appuser
       MYSQL_PASSWORD: password
-      MYSQL_NAME: musicdb
+      MYSQL_DATABASE: musicdb
 
   frontend:
     build: .
