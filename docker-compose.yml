@@ -7,7 +7,7 @@ services:
     #version
     image: mysql:8.0
 
-   #if crash
+    #if crash
     restart: always
     
     environment:
