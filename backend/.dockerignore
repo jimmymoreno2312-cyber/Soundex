@@ -1,0 +1,11 @@
+#things to ignore
+
+#ignore python chache folders, compiled python files,
+#env files, local virtual environment
+__pycache__/
+*.pyc
+.env
+venv/
+
+
+
