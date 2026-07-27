@@ -26,10 +26,10 @@ services:
       - mysql
 
     environment:
-      DB_HOST: mysql
-      DB_USER: appuser
-      DB_PASSWORD: password
-      DB_NAME: musicdb
+      MYSQL_HOST: mysql
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: password
+      MYSQL_NAME: musicdb
 
   frontend:
     build: .
