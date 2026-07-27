@@ -9,6 +9,8 @@
   --accent-hover: #6a4be0;
   --danger: #ff5c5c;
   --danger-bg: rgba(255, 92, 92, 0.1);
+  --score-high: #3ddc84;
+  --score-mid: #f5c518;
   --radius: 8px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
@@ -367,6 +369,202 @@ p {
   margin-bottom: 8px;
 }
 
+.album-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.album-detail-header {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.album-detail-cover {
+  flex-shrink: 0;
+  width: 220px;
+  height: 220px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-highlight);
+}
+
+.album-detail-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.album-detail-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--text-subdued);
+  background: linear-gradient(135deg, var(--bg-highlight), var(--bg-elevated));
+}
+
+.album-detail-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.album-detail-info h1 {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.album-detail-artist {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent);
+  width: fit-content;
+}
+
+.album-detail-artist:hover {
+  color: var(--accent-hover);
+}
+
+.album-detail-meta {
+  font-size: 14px;
+  color: var(--text-subdued);
+}
+
+.genre-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.genre-tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--bg-highlight);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-subdued);
+}
+
+.album-detail-score {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.score-value {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-value.score-high {
+  color: var(--score-high);
+}
+
+.score-value.score-mid {
+  color: var(--score-mid);
+}
+
+.score-value.score-low {
+  color: var(--danger);
+}
+
+.score-value.score-none {
+  color: var(--text-subdued);
+}
+
+.score-label {
+  font-size: 12px;
+  color: var(--text-subdued);
+  white-space: nowrap;
+}
+
+.album-detail-section h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.tracklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tracklist-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.tracklist-item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.tracklist-position {
+  width: 24px;
+  flex-shrink: 0;
+  color: var(--text-subdued);
+}
+
+.tracklist-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.tracklist-duration {
+  flex-shrink: 0;
+  color: var(--text-subdued);
+  font-variant-numeric: tabular-nums;
+}
+
+.review-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.review-list-username {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.review-list-score {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.review-list-score.score-high {
+  color: var(--score-high);
+}
+
+.review-list-score.score-mid {
+  color: var(--score-mid);
+}
+
+.review-list-score.score-low {
+  color: var(--danger);
+}
+
 /* Auth page */
 
 .auth-page {
@@ -534,5 +732,19 @@ p {
 
   .profile-header .btn {
     margin-left: 0;
+  }
+
+  .album-detail-header {
+    flex-direction: column;
+  }
+
+  .album-detail-cover {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .album-detail-score {
+    align-self: flex-start;
   }
 }

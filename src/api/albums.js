@@ -1,5 +1,5 @@
 import { request, isNetworkError } from './client';
-import { mockGetAlbums, mockGetAlbumById } from './mockData';
+import { mockGetAlbums } from './mockData';
 
 export async function getAlbums({ search = '', genre = '' } = {}) {
   const params = new URLSearchParams();
@@ -16,10 +16,5 @@ export async function getAlbums({ search = '', genre = '' } = {}) {
 }
 
 export async function getAlbumById(id) {
-  try {
-    return await request(`/albums/${id}`);
-  } catch (err) {
-    if (isNetworkError(err)) return mockGetAlbumById(id);
-    throw err;
-  }
+  return request(`/albums/${id}`);
 }

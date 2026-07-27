@@ -2,4 +2,4 @@
 A music database and tracking platform for discovering albums, rating music, and writing reviews.
 
 ## Metadata helpers
-`src/api/musicbrainz.js` now contains MusicBrainz search, lookup, cover-art, and normalization helpers that can be used later to replace the current mock album metadata with real release-group data.
+Album/artist metadata comes from MusicBrainz and the Cover Art Archive, but only through our Flask backend (`backend/`) — the frontend never calls musicbrainz.org or coverartarchive.org directly. `src/api/albums.js` calls our own `/api/albums` routes.
