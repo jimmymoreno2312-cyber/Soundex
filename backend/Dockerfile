@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 #copy stuff in backend folder (.env.example, app.py, etc.) into container
-COPY ..
+COPY . .
 
 #port 5001
 EXPOSE 5001
