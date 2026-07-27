@@ -35,7 +35,7 @@ services:
 
     depends_on:
       #start mysql container first
-      - my_sql
+      - mysql
 
     environment:
       #host is mysql, have user and password, uses musicdb
