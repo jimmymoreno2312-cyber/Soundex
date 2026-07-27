@@ -31,7 +31,7 @@ services:
 
     ports:
       #port
-      - "5001:5001"
+      - "5000:5000"
 
     depends_on:
       #start mysql container first
