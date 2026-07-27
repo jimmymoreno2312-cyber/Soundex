@@ -26,19 +26,15 @@ services:
       - mysql_data:/var/lib/mysql
 
   backend:
-    #use dockerfile from backend
     build: ./backend
 
     ports:
-      #port
       - "5000:5000"
 
     depends_on:
-      #start mysql container first
       - mysql
 
     environment:
-      #host is mysql, have user and password, uses musicdb
       DB_HOST: mysql
       DB_USER: appuser
       DB_PASSWORD: password
