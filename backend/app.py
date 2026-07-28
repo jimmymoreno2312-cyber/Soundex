@@ -240,10 +240,18 @@ def add_album():
   conn = get_db_connection()
   cur = conn.cursor()
 
-  #insert the four fields into Albums
-  cur.execute("INSERT INTO Albums (title, artist, genre, year) VALUES (%s, %s, %s, %s)",
-             (title, artist, genre, year))
+  try:
+    #find artist
+    cur.execute("SELECT id FROM Artists WHERE name=%s", (artist_name,))
+    artist=cur.fetchone()
 
+    #if artist exists, pull, else add it
+    if artist:
+      artist_id = artist["id"]
+    else:
+      cur.execute("INSERT INTO Artists (name) VALUES (%s)", (artist_name,))
+      artist_id = cur.lastrowid
+    
   
   cur.close()
   conn.close()
