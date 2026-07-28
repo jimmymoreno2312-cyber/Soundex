@@ -4,61 +4,84 @@ A music discovery platform for browsing albums, rating releases, and writing rev
 
 ## Prerequisites
 
-Ensure you have the following installed:
+Install Docker Desktop, or Docker Engine with the Docker Compose plugin. Verify that Compose is available:
 
-- Node.js 20.19+ or 22.12+
-- Python 3
-- MySQL
+```sh
+docker compose version
+```
 
-## Installation
+Node.js, Python, and MySQL do not need to be installed on the host.
 
-1. Install the frontend dependencies
+## Run with Docker Compose
 
-   ```sh
-   npm install
+1. Create a `.env` file in the repository root:
+
+   ```dotenv
+   MYSQL_ROOT_PASSWORD=choose-a-root-password
+   MYSQL_DATABASE=soundex
+   MYSQL_USER=soundex
+   MYSQL_PASSWORD=choose-an-app-password
    ```
 
-2. Install the backend dependencies
+Use non-empty passwords and keep this file private. Docker Compose passes the application credentials to the backend and sets its database host to the`mysql` service automatically.
+
+
+2. Build and start MySQL, the Flask backend, and the Vite frontend:
 
    ```sh
-   python3 -m venv .venv
-   source .venv/bin/activate
-   python3 -m pip install -r backend/requirements.txt
+   docker compose up --build -d
    ```
 
-3. Configure the database
-
-   Copy the example environment file and update it with your MySQL credentials:
+3. After MySQL finishes starting, initialize the database tables:
 
    ```sh
-   cp backend/.env.example backend/.env
+   docker compose exec backend python setup_db.py
    ```
 
-   Create the database named by `MYSQL_DATABASE`, then initialize its tables:
+4. Open [http://localhost:3000](http://localhost:3000).
 
-   ```sh
-   python3 backend/setup_db.py
-   ```
+The backend API is available at
+[http://localhost:5001](http://localhost:5001).
 
-4. Start the application
+### Common commands
 
-   Start the backend:
+View service status:
 
-   ```sh
-   source .venv/bin/activate
-   python3 backend/app.py
-   ```
+```sh
+docker compose ps
+```
 
-   In another terminal, start the frontend:
+Follow logs from all services:
 
-   ```sh
-   npm run dev
-   ```
+```sh
+docker compose logs -f
+```
+
+Start the existing containers again:
+
+```sh
+docker compose up -d
+```
+
+Rebuild after changing application code or dependencies:
+
+```sh
+docker compose up --build -d
+```
+
+Stop and remove the containers while preserving MySQL data:
+
+```sh
+docker compose down
+```
+
+To also delete the database volume and start with an empty database, run
+`docker compose down -v`, then repeat the startup and database initialization
+steps above.
 
 ## Importing album metadata
 
-Soundex reads album metadata from its own MySQL database. It does not fetch or
-enrich releases through MusicBrainz.
+Like RateYourMusic (RYM) and Album of the Year (AOTY), Soundex reads album metadata from its own MySQL database. It does not fetch or enrich releases through a third-party API.
 
 The repository includes a curated starter file at
 `backend/seed_data/albums.json`. Validate it without touching the database:
