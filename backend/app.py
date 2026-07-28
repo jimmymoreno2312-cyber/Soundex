@@ -60,17 +60,12 @@ def auth_required(f):
     return decorator
 
 def require_role(*allowed_roles):
-    # Must be stacked under @auth_required (applied above it in source, so
-    # it runs after) — relies on current_user_id already being resolved.
+    #must be used under @auth_required
     def decorator(f):
         @wraps(f)
         def decorator_function(*args, **kwargs):
-            if not hasattr(g, "current_user"):
-                return jsonify({"message": "Login required"}), 401
-            user = g.current_user
-            if user["role"] not in allowed_roles:
+            if g.current_user["role"] not in allowed_roles:
                 return jsonify({"message": "You don't have permission"}), 403
-
             return f(*args, **kwargs)
         return decorator_function
     return decorator
