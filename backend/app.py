@@ -304,6 +304,33 @@ def add_rating(album_id):
     finally:
         cur.close()
         conn.close()
+   
+#get ratings
+@app.route("/api/users/<int:user_id>/reviews", methods=["GET"])
+def get_user_reviews(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        #Get rating info, join albums and artist so we can get that too. 
+        #order by date created
+        cur.execute(
+            """
+            SELECT Ratings.id, Ratings.score, Ratings.body, Ratings.created_at,
+            Albums.id AS album_id, Albums.title AS album_title, Albums.cover_image_url AS cover_url,
+            Artists.name AS artist
+            FROM Ratings JOIN Albums ON Ratings.album_id = Albums.id
+            JOIN Artists ON Albums.artist_id = Artists.id WHERE Ratings.user_id = %s
+            ORDER BY Ratings.created_at DESC
+            """, (user_id,),)
+
+        reviews = cur.fetchall()
+        return jsonify(reviews), 200
+
+    finally:
+        cur.close()
+        conn.close()
+
 
 #for adding albums
 @app.route("/api/albums", methods=["POST"])
