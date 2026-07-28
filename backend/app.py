@@ -368,6 +368,162 @@ def update_list(list_id):
         cur.close()
         conn.close()
 
+# Deletes a list (only if owned by logged-in user)
+@app.route("/api/lists/<int:list_id>", methods=["DELETE"])
+@auth_required
+def delete_list(list_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Find the list if it belongs to the logged-in user.
+        cur.execute(
+            "SELECT id FROM Lists WHERE id = %s AND user_id = %s",
+            (list_id, g.current_user["user_id"]),
+        )
+        list_details = cur.fetchone()
+
+        if not list_details:
+            return jsonify({"message": "List not found"}), 404
+
+        # Remove the album entries (actual albums aren't deleted, though), then delete the list
+        cur.execute("DELETE FROM ListItems WHERE list_id = %s", (list_id,))
+        cur.execute("DELETE FROM Lists WHERE id = %s", (list_id,))
+        conn.commit()
+
+        return jsonify({"message": "List deleted"}), 200
+    finally:
+        cur.close()
+        conn.close()
+
+# Add an album to list
+@app.route("/api/lists/<int:list_id>/items", methods=["POST"])
+@auth_required
+def add_list_item(list_id):
+    data = request.get_json()
+    album_id = data.get("album_id")
+
+    if not album_id:
+        return jsonify({"message": "Album ID is required"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Find the list if it belongs to the logged-in user
+        cur.execute(
+            "SELECT id FROM Lists WHERE id = %s AND user_id = %s",
+            (list_id, g.current_user["user_id"]),
+        )
+        list_details = cur.fetchone()
+
+        if not list_details:
+            return jsonify({"message": "List not found"}), 404
+
+        # Ensure the album exists
+        cur.execute("SELECT id FROM Albums WHERE id = %s", (album_id,))
+        album = cur.fetchone()
+
+        if not album:
+            return jsonify({"message": "Album not found"}), 404
+
+        # Put the album at the end of the list
+        cur.execute(
+            "SELECT COALESCE(MAX(position), 0) AS last_position "
+            "FROM ListItems WHERE list_id = %s",
+            (list_id,),
+        )
+        last_position = cur.fetchone()["last_position"]
+        position = last_position + 1
+
+        cur.execute(
+            "INSERT INTO ListItems (list_id, album_id, position) "
+            "VALUES (%s, %s, %s)",
+            (list_id, album_id, position),
+        )
+        item_id = cur.lastrowid
+        conn.commit()
+
+        return jsonify({
+            "id": item_id,
+            "list_id": list_id,
+            "album_id": album_id,
+            "position": position,
+        }), 201
+    finally:
+        cur.close()
+        conn.close()
+
+# Deletes a list (only if owned by logged-in user)
+@app.route("/api/lists/<int:list_id>", methods=["DELETE"])
+@auth_required
+def delete_list(list_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Find the list if it belongs to the logged-in user.
+        cur.execute(
+            "SELECT id FROM Lists WHERE id = %s AND user_id = %s",
+            (list_id, g.current_user["user_id"]),
+        )
+        list_details = cur.fetchone()
+
+        if not list_details:
+            return jsonify({"message": "List not found"}), 404
+
+        # Remove the album entries (actual albums aren't deleted, though), then delete the list
+        cur.execute("DELETE FROM ListItems WHERE list_id = %s", (list_id,))
+        cur.execute("DELETE FROM Lists WHERE id = %s", (list_id,))
+        conn.commit()
+
+        return jsonify({"message": "List deleted"}), 200
+    finally:
+        cur.close()
+        conn.close()
+
+# Remove an album from a list
+@app.route(
+    "/api/lists/<int:list_id>/items/<int:album_id>",
+    methods=["DELETE"],
+)
+@auth_required
+def remove_list_item(list_id, album_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        # Make sure the list belongs to the logged-in user
+        cur.execute(
+            "SELECT id FROM Lists WHERE id = %s AND user_id = %s",
+            (list_id, g.current_user["user_id"]),
+        )
+        list_details = cur.fetchone()
+
+        if not list_details:
+            return jsonify({"message": "List not found"}), 404
+
+        # Make sure the album is actually in this list
+        cur.execute(
+            "SELECT id FROM ListItems WHERE list_id = %s AND album_id = %s",
+            (list_id, album_id),
+        )
+        list_item = cur.fetchone()
+
+        if not list_item:
+            return jsonify({"message": "Album is not in this list"}), 404
+
+        # Remove it from the list, but do not delete the album itself
+        cur.execute(
+            "DELETE FROM ListItems WHERE list_id = %s AND album_id = %s",
+            (list_id, album_id),
+        )
+        conn.commit()
+
+        return jsonify({"message": "Album removed from list"}), 200
+    finally:
+        cur.close()
+        conn.close()
+
 # Create a list
 @app.route("/api/lists", methods=["POST"])
 @auth_required
