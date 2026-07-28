@@ -1,6 +1,11 @@
-#things to ignore for frontend docker
-
-#don't copy node_modules folder or Vite build folders (will be created upon execution)
-node_modules/
-dist/
-  
+# Ignore macOS metadata (finder), Git history, sensitive secrets (.env),
+# compiled caches, and local host-built dependencies for Python and Node.js
+.DS_Store
+.git
+.gitignore
+.venv
+**/.env
+**/__pycache__
+**/*.pyc
+node_modules
+dist
