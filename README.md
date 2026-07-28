@@ -154,4 +154,16 @@ or `null`. Tracks are optional:
 
 Tanner- Did the work on the docker files as well as getting/adding albums.
 Also worked on the ratings, viewing, etc.
-Jimmy- Created user login/register/auth. Managed the database creation and subsquent cloud deployment using Railway. Managed users roles. 
+
+Jimmy- Created user login/register/auth. Managed the database creation and subsquent cloud deployment using Railway. Managed users roles.
+
+Arnav - Implemented authenticated list CRUD APIs with ownership checks; built My Lists and List Detail pages with frontend API integration; added curated album seed data and database-import tooling; diagnosed database connection issues 
+
+Everyone - all of us jumped around between section and section debugging/creating.
+
+## Demo account (to connect to DB)
+RAILWAY_MYSQL_HOST=tokaido.proxy.rlwy.net
+RAILWAY_MYSQL_PORT=43228
+RAILWAY_MYSQL_USER=soundex_app
+RAILWAY_MYSQL_PASSWORD=rymmerchant2020@aA
+RAILWAY_MYSQL_DATABASE=railway
