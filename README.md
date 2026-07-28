@@ -148,3 +148,9 @@ or `null`. Tracks are optional:
 - oxlint
 - @types/react
 - @types/react-dom
+
+
+## Separation of Work
+
+Tanner- Did the work on the docker files as well as getting/adding albums.
+Also worked on the ratings, viewing, etc.
