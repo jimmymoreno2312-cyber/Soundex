@@ -226,11 +226,11 @@ def get_ratings(album_id):
 def add_album():
  
   #get data that was input
-  data = request.get_json
+  data = request.get_json()
 
   title = data.get("title")
-  artist = data.get("artist")
-  genre = data.get("genre")
+  artist_name = data.get("artist")
+  genre_name = data.get("genre")
   year = data.get("year")
 
  #contingency
@@ -238,7 +238,7 @@ def add_album():
         return jsonify({"message": "All fields are required"}), 400
  
   conn = get_db_connection()
-  cur = conn.cursor()
+  cur = conn.cursor(Dictionary=True)
 
   try:
     #find artist
@@ -268,7 +268,7 @@ def add_album():
         release_date = f"{year}-01-01"
 
         #put it all together and insert it
-        cur.execute("INSERT INTO Album(title, artist_id, genre_id, release_date)
+        cur.execute("INSERT INTO Albums(title, artist_id, genre_id, release_date)
                      VALUES (%s, %s, %s, %s)", (title, artist_id, genre_id, release_date))
 
         conn.commit()
