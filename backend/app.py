@@ -221,5 +221,31 @@ def get_ratings(album_id):
       cur.close()
       conn.close()
 
+#for adding albums
+@app.route("/api/albums", methods=["POST"])
+def add_album():
+ 
+  #get data that was input
+  data = request.get_json
+
+  title = data.get("title")
+  artist = data.get("artist")
+  genre = data.get("genre")
+  year = data.get("year")
+
+ conn = get_db_connection()
+ cur = conn.cursor()
+
+ #insert the four fields into Albums
+ cur.execute("INSERT INTO Albums (title, artist, genre, year) VALUES (%s, %s, %s, %s)",
+             (title, artist, genre, year))
+
+ conn.commit()
+ cur.close()
+ conn.close()
+
+ return jsonify({"message": "Album added"}), 201
+                                   
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 5001, debug = True)
