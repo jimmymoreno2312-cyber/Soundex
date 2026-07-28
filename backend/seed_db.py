@@ -15,10 +15,11 @@ with open(seed_file, "r", encoding="utf-8") as file:
 
 # Connect to MySQL
 conn = mysql.connector.connect(
-    host=os.environ["MYSQL_HOST"],
-    user=os.environ["MYSQL_USER"],
-    password=os.environ["MYSQL_PASSWORD"],
-    database=os.environ["MYSQL_DATABASE"]
+    host=os.environ["RAILWAY_MYSQL_HOST"],
+    port=int(os.environ["RAILWAY_MYSQL_PORT"]),
+    user=os.environ["RAILWAY_MYSQL_USER"],
+    password=os.environ["RAILWAY_MYSQL_PASSWORD"],
+    database=os.environ["RAILWAY_MYSQL_DATABASE"]
 )
 cur = conn.cursor()
 
