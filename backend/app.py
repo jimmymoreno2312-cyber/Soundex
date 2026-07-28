@@ -327,6 +327,47 @@ def get_list(list_id):
         cur.close()
         conn.close()
 
+# Rename/edit a list
+@app.route("/api/lists/<int:list_id>", methods=["PATCH"])
+@auth_required
+def update_list(list_id):
+    data = request.get_json()
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Find the list if it belongs to the logged-in user
+        cur.execute(
+            "SELECT * FROM Lists WHERE id = %s AND user_id = %s",
+            (list_id, g.current_user["user_id"]),
+        )
+        list_details = cur.fetchone()
+
+        if not list_details:
+            return jsonify({"message": "List not found"}), 404
+
+        # Keep the old value when a field was not submitted
+        title = data.get("title", list_details["title"])
+        description = data.get("description", list_details["description"])
+
+        if not title:
+            return jsonify({"message": "Title is required"}), 400
+
+        # Save the edited list
+        cur.execute(
+            "UPDATE Lists SET title = %s, description = %s WHERE id = %s",
+            (title, description, list_id),
+        )
+        conn.commit()
+
+        # Return the updated list
+        cur.execute("SELECT * FROM Lists WHERE id = %s", (list_id,))
+        updated_list = cur.fetchone()
+        return jsonify(updated_list), 200
+    finally:
+        cur.close()
+        conn.close()
+
 # Create a list
 @app.route("/api/lists", methods=["POST"])
 @auth_required
