@@ -192,7 +192,7 @@ def get_album(album_id):
 
   try:
      #get album where album id matches
-     cur.execute(SELECT * FROM Albums WHERE id = %s, (album_id,))
+     cur.execute("SELECT * FROM Albums WHERE id = %s", (album_id,))
      album = cur.fetchone()
 
      #if album doesn't exist
