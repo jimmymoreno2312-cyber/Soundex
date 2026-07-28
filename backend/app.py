@@ -229,13 +229,13 @@ def add_album():
   year = data.get("year")
 
  #contingency
- if not title or not artist_name or not genre_name or not year:
+  if not title or not artist_name or not genre_name or not year:
      return jsonify({"message": "All fields are required"}), 400
  
- conn = get_db_connection()
- cur = conn.cursor(dictionary=True)
+  conn = get_db_connection()
+  cur = conn.cursor(dictionary=True)
 
- try:
+  try:
    #find artist
    cur.execute("SELECT id FROM Artists WHERE name=%s", (artist_name,))
    artist=cur.fetchone()
@@ -267,7 +267,7 @@ def add_album():
    conn.commit()
    return jsonify({"message": "Album added"}), 201
 
- finally:
+  finally:
      cur.close()
      conn.close()
                                    
