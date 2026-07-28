@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getAlbums } from '../api/albums';
-import { GENRES } from '../api/mockData';
 import AlbumCard from '../components/AlbumCard';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -12,6 +11,7 @@ export default function Browse() {
   const genre = searchParams.get('genre') || '';
 
   const [albums, setAlbums] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState(null);
   const [retryToken, setRetryToken] = useState(0);
@@ -24,6 +24,11 @@ export default function Browse() {
         if (cancelled) return;
         setAlbums(data);
         setStatus('ready');
+        // Capture the full genre list only from an unfiltered load, so the
+        // dropdown's options don't shrink to whatever the current filter matched.
+        if (!search && !genre) {
+          setGenres([...new Set(data.map((a) => a.genre).filter(Boolean))].sort());
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -60,7 +65,7 @@ export default function Browse() {
           aria-label="Filter by genre"
         >
           <option value="">All genres</option>
-          {GENRES.map((g) => (
+          {genres.map((g) => (
             <option key={g} value={g}>
               {g}
             </option>
