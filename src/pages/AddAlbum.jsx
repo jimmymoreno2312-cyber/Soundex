@@ -1,6 +1,7 @@
 //generated with help from Claude. Frontend stuff.
 
 import { useState } from 'react';
+import { addAlbum } from '../api/albums';
 
 export default function AddAlbum() {
   const [album, setAlbum] = useState({
@@ -17,13 +18,30 @@ export default function AddAlbum() {
     });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(e) {
+  e.preventDefault();
 
-    console.log(album);
-    alert("Album submitted!");
+  try {
+    await addAlbum({
+      title: album.title,
+      artist: album.artist,
+      genre: album.genre,
+      year: album.year,
+    });
 
+    alert("Album added!");
+
+    setAlbum({
+      title: '',
+      artist: '',
+      genre: '',
+      year: '',
+    });
+
+  } catch (err) {
+    alert(err.message || "Failed to add album");
   }
+}
 
   return (
     <div className="add-album-page">
