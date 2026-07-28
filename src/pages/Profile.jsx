@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUserReviews } from '../api/users';
 import Spinner from '../components/Spinner';
@@ -12,6 +12,12 @@ function formatDate(iso) {
     month: 'long',
     day: 'numeric',
   });
+}
+
+function scoreClass(score) {
+  if (score >= 70) return 'score-high';
+  if (score >= 40) return 'score-mid';
+  return 'score-low';
 }
 
 export default function Profile() {
@@ -74,7 +80,14 @@ export default function Profile() {
           <ul className="review-list">
             {reviews.map((review) => (
               <li key={review.id} className="review-list-item">
-                <div className="review-list-rating">★ {review.rating}/5</div>
+                <div className="review-list-header">
+                  <Link to={`/albums/${review.album_id}`} className="review-list-username">
+                    {review.album_title} — {review.artist}
+                  </Link>
+                  <span className={`review-list-score ${scoreClass(review.score)}`}>
+                    {review.score}/100
+                  </span>
+                </div>
                 <p className="review-list-body">{review.body}</p>
                 <p className="review-list-date">{formatDate(review.created_at)}</p>
               </li>
