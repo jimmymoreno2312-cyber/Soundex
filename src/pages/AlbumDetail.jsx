@@ -313,7 +313,7 @@ export default function AlbumDetail() {
                   <span className={`review-list-score ${scoreClass(rating.score)}`}>
                     {rating.score}/100
                   </span>
-                  {user?.role === 'moderator' && (
+                  {(user?.id === rating.user_id || user?.role === 'moderator') && (
                     <button
                       type="button"
                       className="btn btn-ghost review-list-delete"

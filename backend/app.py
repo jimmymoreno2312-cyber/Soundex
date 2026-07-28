@@ -16,11 +16,11 @@ CORS(app, origins=["http://localhost:3000"])
 
 def get_db_connection():
     return mysql.connector.connect(
-        host=os.environ["RAILWAY_MYSQL_HOST"],
-        port=int(os.environ["RAILWAY_MYSQL_PORT"]),
-        user=os.environ["RAILWAY_MYSQL_USER"],
-        password=os.environ["RAILWAY_MYSQL_PASSWORD"],
-        database=os.environ["RAILWAY_MYSQL_DATABASE"],
+        host=os.environ["MYSQL_HOST"],
+        port=int(os.environ.get("MYSQL_PORT", 3306)),
+        user=os.environ["MYSQL_USER"],
+        password=os.environ["MYSQL_PASSWORD"],
+        database=os.environ["MYSQL_DATABASE"],
     )
 
 def create_session(cur, user_id):
@@ -332,6 +332,29 @@ def get_user_reviews(user_id):
         conn.close()
 
 
+#for deleting ratings
+@app.route("/api/albums/<int:album_id>/ratings/<int:rating_id>", methods=["DELETE"])
+@auth_required
+def delete_rating(album_id, rating_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        cur.execute(
+            "SELECT * FROM Ratings WHERE id = %s AND album_id = %s",(rating_id, album_id),)
+        rating = cur.fetchone()
+        if rating is None:
+            return jsonify({"message": "Rating not found"}), 404
+        is_owner = rating["user_id"] == g.current_user["user_id"]  # Assuming the user is the owner of the rating
+        is_moderator = g.current_user["role"] == "moderator"
+        if not is_owner and not is_moderator:
+            return jsonify({"message": "You are not the owner of this rating and not a moderator"}), 403
+        cur.execute("DELETE FROM Ratings WHERE id = %s", (rating["id"],))
+        conn.commit()
+        return jsonify({"message": "Rating deleted"}), 200
+    finally:
+        cur.close()
+        conn.close()
+
 #for adding albums
 @app.route("/api/albums", methods=["POST"])
 @auth_required
@@ -385,8 +408,8 @@ def add_album():
        genre_id = cur.lastrowid
 
    #Add album
-   #need release date here though
-   release_date = year
+   #release_date column is a DATE, so store Jan 1 of the given year
+   release_date = f"{year}-01-01"
 
    #put it all together and insert it
    cur.execute("INSERT INTO Albums(title, artist_id, genre_id, release_date) VALUES (%s, %s, %s, %s)", (title, artist_id, genre_id, release_date))
@@ -555,7 +578,6 @@ def add_list_item(list_id):
         # Find the album
         cur.execute("SELECT id FROM Albums WHERE id = %s", (album_id,))
         album = cur.fetchone()
-
         if not album:
             return jsonify({"message": "Album not found"}), 404
 
@@ -593,7 +615,6 @@ def add_list_item(list_id):
     finally:
         cur.close()
         conn.close()
-
 
 # Remove an album from a list
 @app.route(
@@ -636,7 +657,6 @@ def remove_list_item(list_id, album_id):
     finally:
         cur.close()
         conn.close()
-
 
 # Create a list
 @app.route("/api/lists", methods=["POST"])
