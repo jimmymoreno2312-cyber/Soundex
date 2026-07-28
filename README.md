@@ -132,3 +132,19 @@ or `null`. Tracks are optional:
   ]
 }
 ```
+## List of Libraries / Other Resources
+
+- Flask
+- Flask-Cors
+- mysql-connector-python
+- passlib
+- bcrypt
+- python-dotenv
+- react
+- react-dom
+- react-router-dom
+- vite
+- @vitejs/plugin-react
+- oxlint
+- @types/react
+- @types/react-dom
