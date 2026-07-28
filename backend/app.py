@@ -241,6 +241,14 @@ def get_album(album_id):
      if album["avg_score"] is not None:
          album["avg_score"] = round(float(album["avg_score"]))
 
+     #Get tracklist from Songs
+     cur.execute(
+         "SELECT id, title, position, duration AS duration_seconds, audio_url "
+         "FROM Songs WHERE album_id = %s ORDER BY position",
+         (album_id,),
+     )
+     album["tracks"] = cur.fetchall()
+
      #otherwise
      return jsonify(album), 200
   finally:
