@@ -44,7 +44,7 @@ export default function Layout({ children }) {
         <div className="header-auth">
           <Link to "/add-album" className="btn btn-primary">
             Add Album
-          </div>Link>
+          </Link>
           {isAuthenticated ? (
             <div className="header-auth-user">
               <Link to="/profile" className="profile-link">
