@@ -265,7 +265,7 @@ def add_album():
 
         #Add album
         #need release date here though
-        release_date = f"{year}-01-01"
+        release_date = year
 
         #put it all together and insert it
         cur.execute("INSERT INTO Albums(title, artist_id, genre_id, release_date)
