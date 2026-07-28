@@ -233,18 +233,18 @@ def add_album():
   genre = data.get("genre")
   year = data.get("year")
 
- conn = get_db_connection()
- cur = conn.cursor()
+  conn = get_db_connection()
+  cur = conn.cursor()
 
- #insert the four fields into Albums
- cur.execute("INSERT INTO Albums (title, artist, genre, year) VALUES (%s, %s, %s, %s)",
+  #insert the four fields into Albums
+  cur.execute("INSERT INTO Albums (title, artist, genre, year) VALUES (%s, %s, %s, %s)",
              (title, artist, genre, year))
 
- conn.commit()
- cur.close()
- conn.close()
+  conn.commit()
+  cur.close()
+  conn.close()
 
- return jsonify({"message": "Album added"}), 201
+  return jsonify({"message": "Album added"}), 201
                                    
 
 if __name__ == "__main__":
