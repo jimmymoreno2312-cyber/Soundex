@@ -262,8 +262,15 @@ def get_ratings(album_id):
    cur = conn.cursor(dictionary=True)
 
    try:
-       #same as above, just get the ratings instead
-       cur.execute("SELECT * FROM Ratings WHERE album_id = %s", (album_id,))
+       #get ratings and order by most recently created
+       cur.execute(
+           "SELECT Ratings.*, Users.username "
+           "FROM Ratings "
+           "JOIN Users ON Ratings.user_id = Users.id "
+           "WHERE Ratings.album_id = %s "
+           "ORDER BY Ratings.created_at DESC",
+           (album_id,),
+       )
 
        ratings = cur.fetchall()
        return jsonify(ratings), 200
