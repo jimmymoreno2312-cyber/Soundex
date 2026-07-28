@@ -233,6 +233,10 @@ def add_album():
   genre = data.get("genre")
   year = data.get("year")
 
+ #contingency
+ if not title or not artist_name or not genre_name or not year:
+        return jsonify({"message": "All fields are required"}), 400
+ 
   conn = get_db_connection()
   cur = conn.cursor()
 
@@ -240,7 +244,7 @@ def add_album():
   cur.execute("INSERT INTO Albums (title, artist, genre, year) VALUES (%s, %s, %s, %s)",
              (title, artist, genre, year))
 
-  conn.commit()
+  
   cur.close()
   conn.close()
 
