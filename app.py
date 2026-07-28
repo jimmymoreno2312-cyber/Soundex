@@ -328,5 +328,21 @@ def create_list():
         cur.close()
         conn.close()
 
+@app.route("/api/lists", methods=["GET"])
+def get_lists():
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Get all lists.
+        cur.execute("SELECT * FROM Lists")
+        lists = cur.fetchall()
+
+        # Return them as JSON.
+        return jsonify(lists), 200
+    finally:
+        cur.close()
+        conn.close()
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 5001, debug = True)
