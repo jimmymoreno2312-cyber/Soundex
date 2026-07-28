@@ -17,4 +17,13 @@ export async function getAlbums({ search = '', genre = '' } = {}) {
 
 export async function getAlbumById(id) {
   return request(`/albums/${id}`);
+
+export async function addAlbum(album) {
+  return request('/albums', {
+    method: 'POST',
+    body: album,
+    auth: true,
+  });
+}
+
 }
