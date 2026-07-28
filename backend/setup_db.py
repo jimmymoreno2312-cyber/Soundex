@@ -33,7 +33,7 @@ cur.execute("""
         title VARCHAR(255) NOT NULL,
         artist_id INT NOT NULL,
         genre_id INT NOT NULL,
-        release_date DATE,
+        release_date YEAR,
         cover_image_url VARCHAR(500),
         FOREIGN KEY (artist_id) REFERENCES Artists(id),
         FOREIGN KEY (genre_id) REFERENCES Genres(id)
