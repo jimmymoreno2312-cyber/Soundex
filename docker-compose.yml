@@ -1,35 +1,17 @@
 services:
 
-  mysql:
-    image: mysql:8.0
-    restart: always
-
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-
-    ports:
-      - "3306:3306"
-
-    volumes:
-      - mysql_data:/var/lib/mysql
-
   backend:
     build: ./backend
 
     ports:
       - "5001:5001"
 
-    depends_on:
-      - mysql
-
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_HOST: ${RAILWAY_MYSQL_HOST}
+      MYSQL_PORT: ${RAILWAY_MYSQL_PORT}
+      MYSQL_USER: ${RAILWAY_MYSQL_USER}
+      MYSQL_PASSWORD: ${RAILWAY_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${RAILWAY_MYSQL_DATABASE}
 
   frontend:
     build: .
@@ -39,6 +21,3 @@ services:
 
     depends_on:
       - backend
-
-volumes:
-  mysql_data:
