@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAlbumById } from '../api/albums';
-import { getAlbumRatings } from '../api/ratings';
+import { getAlbumRatings, submitRating } from '../api/ratings';
+import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -42,11 +43,17 @@ function scoreClass(score) {
 
 export default function AlbumDetail() {
   const { id } = useParams();
+  const { user, isAuthenticated } = useAuth();
   const [album, setAlbum] = useState(null);
   const [ratings, setRatings] = useState([]);
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState(null);
   const [retryToken, setRetryToken] = useState(0);
+
+  const [scoreInput, setScoreInput] = useState('');
+  const [bodyInput, setBodyInput] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -57,6 +64,12 @@ export default function AlbumDetail() {
         setAlbum(albumData);
         setRatings(ratingsData);
         setStatus('ready');
+
+        const myRating = user && ratingsData.find((r) => r.user_id === user.id);
+        if (myRating) {
+          setScoreInput(String(myRating.score));
+          setBodyInput(myRating.body || '');
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -66,7 +79,30 @@ export default function AlbumDetail() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, retryToken]);
+
+  async function handleSubmitRating(e) {
+    e.preventDefault();
+    const score = Number(scoreInput);
+    if (!Number.isInteger(score) || score < 0 || score > 100) {
+      setSubmitError('Score must be a whole number from 0 to 100');
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      await submitRating(id, { score, body: bodyInput.trim() });
+      const [albumData, ratingsData] = await Promise.all([getAlbumById(id), getAlbumRatings(id)]);
+      setAlbum(albumData);
+      setRatings(ratingsData);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to submit rating');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (status === 'loading') {
     return <Spinner label="Loading album…" />;
@@ -77,6 +113,7 @@ export default function AlbumDetail() {
   }
 
   const writtenRatings = ratings.filter((r) => r.body && r.body.trim());
+  const alreadyRated = user && ratings.some((r) => r.user_id === user.id);
 
   return (
     <div className="album-detail-page">
@@ -148,6 +185,48 @@ export default function AlbumDetail() {
 
       <section className="album-detail-section">
         <h2>Ratings</h2>
+
+        {isAuthenticated ? (
+          <form className="rating-form" onSubmit={handleSubmitRating}>
+            <div className="rating-form-header">
+              <span className="avatar" aria-hidden="true">
+                {user.username.charAt(0).toUpperCase()}
+              </span>
+              <span className="rating-form-username">{user.username}</span>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                placeholder="0-100"
+                className="rating-score-input"
+                value={scoreInput}
+                onChange={(e) => setScoreInput(e.target.value)}
+                aria-label="Score, 0 to 100"
+              />
+            </div>
+
+            <textarea
+              className="rating-body-input"
+              placeholder="Add a review (optional)"
+              value={bodyInput}
+              onChange={(e) => setBodyInput(e.target.value)}
+              rows={3}
+            />
+
+            {submitError && <p className="field-error">{submitError}</p>}
+
+            <div className="rating-form-footer">
+              <button type="submit" className="btn btn-primary" disabled={submitting}>
+                {submitting ? 'Posting…' : alreadyRated ? 'Update rating' : 'Post'}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <p className="empty-state">
+            <Link to="/login">Log in</Link> to rate this album.
+          </p>
+        )}
+
         {writtenRatings.length === 0 ? (
           <p className="empty-state">No written ratings yet.</p>
         ) : (

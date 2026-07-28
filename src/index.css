@@ -565,6 +565,69 @@ p {
   color: var(--danger);
 }
 
+/* Rating submission form */
+
+.rating-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.rating-form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rating-form-username {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.rating-score-input {
+  width: 70px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+}
+
+.rating-score-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.rating-body-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.rating-body-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.rating-form-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Auth page */
 
 .auth-page {
