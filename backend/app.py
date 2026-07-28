@@ -271,7 +271,7 @@ def add_album():
      cur.close()
      conn.close()
 
-
+# List the logged-in user's lists
 @app.route("/api/lists", methods=["GET"])
 @auth_required
 def get_lists():
@@ -293,7 +293,7 @@ def get_lists():
         cur.close()
         conn.close()
         
-
+# Return list details and albums
 @app.route("/api/lists/<int:list_id>", methods=["GET"])
 @auth_required
 def get_list(list_id):
@@ -327,6 +327,7 @@ def get_list(list_id):
         cur.close()
         conn.close()
 
+# Create a list
 @app.route("/api/lists", methods=["POST"])
 @auth_required
 def create_list():
