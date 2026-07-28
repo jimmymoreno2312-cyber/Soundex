@@ -252,11 +252,31 @@ def add_album():
       cur.execute("INSERT INTO Artists (name) VALUES (%s)", (artist_name,))
       artist_id = cur.lastrowid
     
-  
-  cur.close()
-  conn.close()
+     #For genre (same process
+        cur.execute("SELECT id FROM Genres WHERE name = %s", (genre_name,))
+        genre = cur.fetchone()
 
-  return jsonify({"message": "Album added"}), 201
+        #if exists, pull, else add
+        if genre:
+            genre_id = genre["id"]
+        else:
+            cur.execute("INSERT INTO Genres (name) VALUES (%s)",(genre_name,))
+            genre_id = cur.lastrowid
+
+        #Add album
+        #need release date here though
+        release_date = f"{year}-01-01"
+
+        #put it all together and insert it
+        cur.execute("INSERT INTO Album(title, artist_id, genre_id, release_date)
+                     VALUES (%s, %s, %s, %s)", (title, artist_id, genre_id, release_date))
+
+        conn.commit()
+        return jsonify({"message": "Album added"}), 201
+
+    finally:
+        cur.close()
+        conn.close()
                                    
 
 if __name__ == "__main__":
