@@ -292,6 +292,8 @@ def add_rating(album_id):
 
 #for adding albums
 @app.route("/api/albums", methods=["POST"])
+@auth_required
+@require_role("moderator")
 def add_album():
  
   #get data that was input
@@ -305,7 +307,16 @@ def add_album():
  #contingency
   if not title or not artist_name or not genre_name or not year:
      return jsonify({"message": "All fields are required"}), 400
- 
+
+  #error handling
+  try:
+     year = int(year)
+  except (TypeError, ValueError):
+     return jsonify({"message": "Release year must be a number (e.g. 1994)"}), 400
+
+  if not (1900 <= year <= 2100):
+     return jsonify({"message": "Release year must be between 1900 and 2100"}), 400
+  
   conn = get_db_connection()
   cur = conn.cursor(dictionary=True)
 
