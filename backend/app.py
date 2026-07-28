@@ -221,5 +221,63 @@ def get_ratings(album_id):
       cur.close()
       conn.close()
 
+#for adding albums
+@app.route("/api/albums", methods=["POST"])
+def add_album():
+ 
+  #get data that was input
+  data = request.get_json
+
+  title = data.get("title")
+  artist = data.get("artist")
+  genre = data.get("genre")
+  year = data.get("year")
+
+ #contingency
+ if not title or not artist_name or not genre_name or not year:
+        return jsonify({"message": "All fields are required"}), 400
+ 
+  conn = get_db_connection()
+  cur = conn.cursor()
+
+  try:
+    #find artist
+    cur.execute("SELECT id FROM Artists WHERE name=%s", (artist_name,))
+    artist=cur.fetchone()
+
+    #if artist exists, pull, else add it
+    if artist:
+      artist_id = artist["id"]
+    else:
+      cur.execute("INSERT INTO Artists (name) VALUES (%s)", (artist_name,))
+      artist_id = cur.lastrowid
+    
+     #For genre (same process
+        cur.execute("SELECT id FROM Genres WHERE name = %s", (genre_name,))
+        genre = cur.fetchone()
+
+        #if exists, pull, else add
+        if genre:
+            genre_id = genre["id"]
+        else:
+            cur.execute("INSERT INTO Genres (name) VALUES (%s)",(genre_name,))
+            genre_id = cur.lastrowid
+
+        #Add album
+        #need release date here though
+        release_date = f"{year}-01-01"
+
+        #put it all together and insert it
+        cur.execute("INSERT INTO Album(title, artist_id, genre_id, release_date)
+                     VALUES (%s, %s, %s, %s)", (title, artist_id, genre_id, release_date))
+
+        conn.commit()
+        return jsonify({"message": "Album added"}), 201
+
+    finally:
+        cur.close()
+        conn.close()
+                                   
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 5001, debug = True)

@@ -6,6 +6,7 @@ import AlbumDetail from './pages/AlbumDetail';
 import ArtistDetail from './pages/ArtistDetail';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
+import AddAlbum from './pages/AddAlbum';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/add-album" element={<AddAlbum />} />
         </Routes>
       </Layout>
     </AuthProvider>
