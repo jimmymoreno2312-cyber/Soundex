@@ -154,4 +154,4 @@ or `null`. Tracks are optional:
 
 Tanner- Did the work on the docker files as well as getting/adding albums.
 Also worked on the ratings, viewing, etc.
-All of us jumped around between section and section debugging/creating.
+Jimmy- Created user login/register/auth. Managed the database creation and subsquent cloud deployment using Railway. Managed users roles. 
