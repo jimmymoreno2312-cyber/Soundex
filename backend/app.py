@@ -17,6 +17,7 @@ CORS(app, origins=["http://localhost:3000"])
 def get_db_connection():
     return mysql.connector.connect(
         host=os.environ["MYSQL_HOST"],
+        port=int(os.environ.get("MYSQL_PORT", 3306)),
         user=os.environ["MYSQL_USER"],
         password=os.environ["MYSQL_PASSWORD"],
         database=os.environ["MYSQL_DATABASE"],
@@ -165,19 +166,53 @@ def logout():
         conn.close()
 
 #Get all albums
+#how to implement dynamic queries: https://medium.com/@brksglm/creating-dynamic-queries-with-sql-4a8686993218
 @app.route("/api/albums", methods=["GET"])
 def get_albums():
- conn = get_db_connection()
- cur = conn.cursor(dictionary=True)
- try:
-     #Select them all
-     cur.execute("SELECT * FROM Albums")
-     albums = cur.fetchall()
+    #grab search and genre parameters
+    search = request.args.get("search", "")
+    genre = request.args.get("genre", "")
 
-     return jsonify(albums), 200
- finally:
-    cur.close()
-    conn.close()
+    #build the dynamic query components
+    conditions = []
+    params = []
+    if search:
+        conditions.append("Albums.title LIKE %s")
+        params.append(f"%{search}%")
+    if genre:
+        conditions.append("Genres.name = %s")
+        params.append(genre)
+    where_clause = f" WHERE {' AND '.join(conditions)}" if conditions else ""
+
+    #join the conditions
+    query = f"""
+        SELECT 
+            Albums.*, 
+            Genres.name AS genre, 
+            Artists.name AS artist, 
+            Albums.cover_image_url AS cover_url, 
+            (SELECT AVG(score) FROM Ratings WHERE Ratings.album_id = Albums.id) AS avg_score 
+        FROM Albums 
+        JOIN Genres ON Albums.genre_id = Genres.id 
+        JOIN Artists ON Albums.artist_id = Artists.id
+        {where_clause}
+    """
+
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        #execute the query with the parameters
+        cur.execute(query, params)
+        albums = cur.fetchall()
+        #format the average scores to rounded integers
+        for album in albums:
+            if album["avg_score"] is not None:
+                album["avg_score"] = round(float(album["avg_score"]))
+
+        return jsonify(albums), 200
+    finally:
+        cur.close()
+        conn.close()
 
 #get one album
 @app.route("/api/albums/<int:album_id>", methods=["GET"])
@@ -186,13 +221,25 @@ def get_album(album_id):
   cur = conn.cursor(dictionary=True)
 
   try:
-     #get album where album id matches
-     cur.execute("SELECT * FROM Albums WHERE id = %s", (album_id,))
+     #get album, with artist/genre names, cover_url, and average score computed live from Ratings
+     cur.execute(
+         "SELECT Albums.*, Genres.name AS genre, Artists.name AS artist, "
+         "Albums.cover_image_url AS cover_url, "
+         "(SELECT AVG(score) FROM Ratings WHERE Ratings.album_id = Albums.id) AS avg_score "
+         "FROM Albums "
+         "JOIN Genres ON Albums.genre_id = Genres.id "
+         "JOIN Artists ON Albums.artist_id = Artists.id "
+         "WHERE Albums.id = %s",
+         (album_id,),
+     )
      album = cur.fetchone()
 
      #if album doesn't exist
      if not album:
          return jsonify({"message": "Album not found"}), 404
+
+     if album["avg_score"] is not None:
+         album["avg_score"] = round(float(album["avg_score"]))
 
      #otherwise
      return jsonify(album), 200
@@ -215,6 +262,33 @@ def get_ratings(album_id):
    finally:
       cur.close()
       conn.close()
+
+
+#for adding ratings
+@app.route("/api/albums/<int:album_id>/ratings", methods=["POST"])
+@auth_required
+def add_rating(album_id):
+    data = request.get_json()
+    score = data.get("score")
+    body = data.get("body")
+
+    if not isinstance(score, int) or not (0 <= score <= 100):
+        return jsonify({"message": "Score must be an integer between 0 and 100"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        cur.execute(
+            "INSERT INTO Ratings (user_id, album_id, score, body) VALUES (%s, %s, %s, %s) "
+            "ON DUPLICATE KEY UPDATE score = VALUES(score), body = VALUES(body)",
+            (g.current_user["user_id"], album_id, score, body),
+        )
+        conn.commit()
+        return jsonify({"message": "Rating added"}), 201
+    finally:
+        cur.close()
+        conn.close()
 
 #for adding albums
 @app.route("/api/albums", methods=["POST"])

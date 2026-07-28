@@ -16,10 +16,7 @@ export default function AlbumCard({ album }) {
         <p className="album-card-title">{album.title}</p>
         <p className="album-card-artist">{album.artist}</p>
         <p className="album-card-rating">
-          ★ {album.avg_rating != null ? album.avg_rating.toFixed(1) : '—'}
-          {album.rating_count != null
-            ? ` from ${album.rating_count.toLocaleString()} ratings`
-            : ''}
+          {album.avg_score != null ? `${album.avg_score}/100` : 'Not yet rated'}
         </p>
       </div>
     </Link>
