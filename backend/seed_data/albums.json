@@ -1,0 +1,191 @@
+[
+  {
+    "title": "Solid Air",
+    "artist": "John Martyn",
+    "genre": "Singer-Songwriter",
+    "release_date": "1973-02-01",
+    "avg_rating": 3.85,
+    "rating_count": 6233,
+    "cover_image_url": "https://coverartarchive.org/release/e25065f2-161a-464e-88b2-d9f4f8f293ca/front-500"
+  },
+  {
+    "title": "Wish You Were Here",
+    "artist": "Pink Floyd",
+    "genre": "Progressive Rock",
+    "release_date": "1975-09-12",
+    "avg_rating": 4.36,
+    "rating_count": 94775,
+    "cover_image_url": "https://coverartarchive.org/release/424db76a-8604-4350-a50f-766f58570470/front-500"
+  },
+  {
+    "title": "Songs in the Key of Life",
+    "artist": "Stevie Wonder",
+    "genre": "Soul",
+    "release_date": "1976-09-28",
+    "avg_rating": 4.3,
+    "rating_count": 34804,
+    "cover_image_url": "https://coverartarchive.org/release/9b51a6b5-7f55-4dc7-8e10-a69410c7b306/front-500"
+  },
+  {
+    "title": "El jardín de los presentes",
+    "artist": "Invisible",
+    "genre": "Progressive Rock",
+    "release_date": "1976-09-29",
+    "avg_rating": 4.1,
+    "rating_count": 15310,
+    "cover_image_url": "https://coverartarchive.org/release/2911329e-dc82-4fcd-a803-e3fd9ea827fa/front-500"
+  },
+  {
+    "title": "Hex",
+    "artist": "Bark Psychosis",
+    "genre": "Post-Rock",
+    "release_date": "1994-02-14",
+    "avg_rating": 3.84,
+    "rating_count": 15431,
+    "cover_image_url": "https://coverartarchive.org/release/6c13438f-0179-3d15-b6c8-03da5231d3fa/front-500"
+  },
+  {
+    "title": "The Magnolia Electric Co.",
+    "artist": "Songs: Ohia",
+    "genre": "Alt-Country",
+    "release_date": "2003-03-04",
+    "avg_rating": 4.1,
+    "rating_count": 22501,
+    "cover_image_url": "https://coverartarchive.org/release/f9479fc5-6438-42e6-b493-0f0bde23a352/front-500"
+  },
+  {
+    "title": "What's Going On",
+    "artist": "Marvin Gaye",
+    "genre": "Soul",
+    "release_date": "1971-05-21",
+    "avg_rating": 4.2,
+    "rating_count": 42691,
+    "cover_image_url": "https://coverartarchive.org/release/ba91f9e2-2391-4bbd-9114-c9eff138fd98/front-500"
+  },
+  {
+    "title": "Carrie & Lowell",
+    "artist": "Sufjan Stevens",
+    "genre": "Singer-Songwriter",
+    "release_date": "2015-03-21",
+    "avg_rating": 4.1,
+    "rating_count": 36901,
+    "cover_image_url": "https://coverartarchive.org/release/a3a5335f-3739-42e9-b755-6f944a5f427a/front-500"
+  },
+  {
+    "title": "Purple Mountains",
+    "artist": "Purple Mountains",
+    "genre": "Alt-Country",
+    "release_date": "2019-07-12",
+    "avg_rating": 3.9,
+    "rating_count": 12560,
+    "cover_image_url": "https://coverartarchive.org/release/7b5bbdc0-3cf6-4e2b-9aea-7397095b45dc/front-500"
+  },
+  {
+    "title": "Giant Steps",
+    "artist": "John Coltrane",
+    "genre": "Hard Bop",
+    "release_date": "1960-01-27",
+    "avg_rating": 4.11,
+    "rating_count": 25270,
+    "cover_image_url": "https://coverartarchive.org/release/22689758-ffc1-450f-bb48-52b577077dba/front-500"
+  },
+  {
+    "title": "Bocanada",
+    "artist": "Gustavo Cerati",
+    "genre": "Downtempo",
+    "release_date": "1999-06-28",
+    "avg_rating": 4.08,
+    "rating_count": 17117,
+    "cover_image_url": "https://coverartarchive.org/release/8a36348d-c96b-46c3-adc6-faf765597a07/front-500"
+  },
+  {
+    "title": "Sahara",
+    "artist": "McCoy Tyner",
+    "genre": "Post-Bop",
+    "release_date": "1972-06-01",
+    "avg_rating": 3.88,
+    "rating_count": 2789,
+    "cover_image_url": "https://coverartarchive.org/release/5065431e-cf4b-3928-8c0f-e9579629781b/front-500"
+  },
+  {
+    "title": "Black Fire",
+    "artist": "Andrew Hill",
+    "genre": "Post-Bop",
+    "release_date": "1964-04",
+    "avg_rating": 3.82,
+    "rating_count": 2687,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music128/v4/89/77/29/89772906-ea02-72d8-d6e1-d758cd45f7db/00602547060570.rgb.jpg"
+  },
+  {
+    "title": "Judgment!",
+    "artist": "Andrew Hill",
+    "genre": "Post-Bop",
+    "release_date": "1964-09",
+    "avg_rating": 3.81,
+    "rating_count": 1889,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music4/v4/88/00/00/88000027-112e-c8a8-71b6-add3011016b8/00724356384156.jpg"
+  },
+  {
+    "title": "Mirage",
+    "artist": "Klaus Schulze",
+    "genre": "Berlin School",
+    "release_date": "1977-04",
+    "avg_rating": 3.83,
+    "rating_count": 3128,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music128/v4/2f/67/db/2f67dbbd-8068-f428-d064-fa5973988147/00602557893076.rgb.jpg"
+  },
+  {
+    "title": "Hex",
+    "artist": "Bark Psychosis",
+    "genre": "Post-Rock, Ambient",
+    "release_date": "1994-02-14",
+    "avg_rating": 3.85,
+    "rating_count": 15564,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music115/v4/cd/63/ea/cd63ea51-e1f3-04ae-4c9b-87807d92ee55/05099923723559.jpg"
+  },
+  {
+    "title": "Night Dreamer",
+    "artist": "Wayne Shorter",
+    "genre": "Post-Bop",
+    "release_date": "1964-11",
+    "avg_rating": 3.85,
+    "rating_count": 2837,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music128/v4/0c/94/3d/0c943d84-52c8-c012-c1cf-aefc54b5ece4/00602537483983.rgb.jpg"
+  },
+  {
+    "title": "Elliott Smith",
+    "artist": "Elliott Smith",
+    "genre": "Indie Folk, Singer-Songwriter",
+    "release_date": "1995-07-21",
+    "avg_rating": 4.03,
+    "rating_count": 25468,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music/ee/8c/96/mzi.hzfwdqan.jpg"
+  },
+  {
+    "title": "Milagre dos peixes",
+    "artist": "Milton Nascimento",
+    "genre": "MPB, Brazilian Jazz",
+    "release_date": "1973-04",
+    "avg_rating": 3.94,
+    "rating_count": 4359,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music128/v4/6b/7b/4f/6b7b4ffd-7cf0-58a4-9774-0cf639a9635f/00602557765137.rgb.jpg"
+  },
+  {
+    "title": "Atlantis",
+    "artist": "McCoy Tyner",
+    "genre": "Spiritual Jazz, Post-Bop",
+    "release_date": "1975-06",
+    "avg_rating": 4.00,
+    "rating_count": 569,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music128/v4/ec/97/9f/ec979f94-db33-508f-7d91-fd0b05da935c/00025218550222.rgb.jpg"
+  },
+  {
+    "title": "Glassworks",
+    "artist": "Philip Glass",
+    "genre": "Minimalism, Contemporary Classical",
+    "release_date": "1982",
+    "avg_rating": 3.92,
+    "rating_count": 9581,
+    "cover_image_url": "https://a1.mzstatic.com/us/r1000/0/Music71/v4/a2/41/ae/a241aed7-c417-dc3b-27c4-5d190c2fb723/886446115245.jpg"
+  }
+]

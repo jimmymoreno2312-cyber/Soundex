@@ -1,24 +1,8 @@
-Soundex
-=======
+# Soundex
 
-<<<<<<< HEAD
-## Metadata helpers
-Album/artist metadata comes from MusicBrainz and the Cover Art Archive, but only through our Flask backend (`backend/`) — the frontend never calls musicbrainz.org or coverartarchive.org directly. `src/api/albums.js` calls our own `/api/albums` routes.
-
-## WHAT WE NEED HERE
-
-* A description of the problem you are trying to solve.
-* Any details regarding instructions for the user interface that is beyond the obvious.
-* A list of libraries you are using.
-* A list of other resources.
-* Descriptions of any extra features implemented (beyond the project proposal)
-* Include a description of the separation of work (who was responsible for what pieces
-of the program).
-=======
 A music discovery platform for browsing albums, rating releases, and writing reviews.
 
-Prerequisites
--------------
+## Prerequisites
 
 Ensure you have the following installed:
 
@@ -26,42 +10,102 @@ Ensure you have the following installed:
 - Python 3
 - MySQL
 
-Installation
-------------
+## Installation
 
 1. Install the frontend dependencies
 
-From the Soundex project directory, run:
-
-    npm install
+   ```sh
+   npm install
+   ```
 
 2. Install the backend dependencies
 
-Create and activate a Python virtual environment, then install the required packages:
-
-    python3 -m venv .venv
-    source .venv/bin/activate
-    python3 -m pip install -r backend/requirements.txt
+   ```sh
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python3 -m pip install -r backend/requirements.txt
+   ```
 
 3. Configure the database
 
-Copy the example environment file:
+   Copy the example environment file and update it with your MySQL credentials:
 
-    cp backend/.env.example backend/.env
+   ```sh
+   cp backend/.env.example backend/.env
+   ```
 
-Update backend/.env with your MySQL credentials. Create the database specified by
-MYSQL_DATABASE, then initialize its tables:
+   Create the database named by `MYSQL_DATABASE`, then initialize its tables:
 
-    python3 backend/setup_db.py
+   ```sh
+   python3 backend/setup_db.py
+   ```
 
 4. Start the application
 
-Start the backend:
+   Start the backend:
 
-    source .venv/bin/activate
-    python3 backend/app.py
+   ```sh
+   source .venv/bin/activate
+   python3 backend/app.py
+   ```
 
-In another terminal, start the frontend:
+   In another terminal, start the frontend:
 
-    npm run dev
->>>>>>> 252a8d1 (Updated README (removed references to MusicBrainz and included installation instructions); added backend dependencies)
+   ```sh
+   npm run dev
+   ```
+
+## Importing album metadata
+
+Soundex reads album metadata from its own MySQL database. It does not fetch or
+enrich releases through MusicBrainz.
+
+The repository includes a curated starter file at
+`backend/seed_data/albums.json`. Validate it without touching the database:
+
+```sh
+python3 backend/seed_db.py --dry-run
+```
+
+After running `backend/setup_db.py`, import the starter data:
+
+```sh
+python3 backend/seed_db.py
+```
+
+The importer is safe to rerun. It reuses artists and genres, updates an existing
+album with the same title and artist, and inserts or updates optional tracks by
+their position. Every import runs in one transaction and is rolled back if a
+record fails.
+
+To import another curated file:
+
+```sh
+python3 backend/seed_db.py --file /absolute/path/to/albums.json
+```
+
+Each album requires `title`, `artist`, and `genre`. `release_date` must be a
+complete `YYYY-MM-DD` value or `null`; `cover_image_url` must be an HTTP(S) URL
+or `null`. Tracks are optional:
+
+```json
+{
+  "albums": [
+    {
+      "title": "Example Album",
+      "artist": "Example Artist",
+      "genre": "Rock",
+      "release_date": "2026-07-28",
+      "cover_image_url": "https://example.com/cover.jpg",
+      "tracks": [
+        {
+          "position": 1,
+          "title": "Opening Track",
+          "duration": 215,
+          "audio_url": null
+        }
+      ]
+    }
+  ]
+}
+```
