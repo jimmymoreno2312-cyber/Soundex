@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAlbumById } from '../api/albums';
-import { getAlbumRatings, submitRating } from '../api/ratings';
+import { getAlbumRatings, submitRating, deleteRating } from '../api/ratings';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -54,6 +54,7 @@ export default function AlbumDetail() {
   const [bodyInput, setBodyInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -101,6 +102,17 @@ export default function AlbumDetail() {
       setSubmitError(err.message || 'Failed to submit rating');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDeleteRating(ratingId) {
+    if (!window.confirm('Delete this rating?')) return;
+    setDeleteError('');
+    try {
+      await deleteRating(id, ratingId);
+      setRatings((prev) => prev.filter((r) => r.id !== ratingId));
+    } catch (err) {
+      setDeleteError(err.message || 'Failed to delete rating');
     }
   }
 
@@ -227,6 +239,8 @@ export default function AlbumDetail() {
           </p>
         )}
 
+        {deleteError && <p className="field-error">{deleteError}</p>}
+
         {writtenRatings.length === 0 ? (
           <p className="empty-state">No written ratings yet.</p>
         ) : (
@@ -238,6 +252,15 @@ export default function AlbumDetail() {
                   <span className={`review-list-score ${scoreClass(rating.score)}`}>
                     {rating.score}/100
                   </span>
+                  {user?.role === 'moderator' && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost review-list-delete"
+                      onClick={() => handleDeleteRating(rating.id)}
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
                 <p className="review-list-body">{rating.body}</p>
                 <p className="review-list-date">{formatDate(rating.created_at)}</p>

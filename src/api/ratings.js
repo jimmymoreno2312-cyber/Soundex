@@ -11,3 +11,10 @@ export async function submitRating(albumId, { score, body }) {
     auth: true,
   });
 }
+
+export async function deleteRating(albumId, ratingId) {
+  return request(`/albums/${albumId}/ratings/${ratingId}`, {
+    method: 'DELETE',
+    auth: true,
+  });
+}
