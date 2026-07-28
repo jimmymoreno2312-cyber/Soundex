@@ -292,6 +292,40 @@ def get_lists():
     finally:
         cur.close()
         conn.close()
+        
+
+@app.route("/api/lists/<int:list_id>", methods=["GET"])
+@auth_required
+def get_list(list_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Get the list if it belongs to the logged-in user.
+        cur.execute(
+            "SELECT * FROM Lists WHERE id = %s AND user_id = %s",
+            (list_id, g.current_user["user_id"]),
+        )
+        list_details = cur.fetchone()
+
+        if not list_details:
+            return jsonify({"message": "List not found"}), 404
+
+        # Get the albums in their list order.
+        cur.execute(
+            "SELECT Albums.*, ListItems.position "
+            "FROM ListItems "
+            "JOIN Albums ON ListItems.album_id = Albums.id "
+            "WHERE ListItems.list_id = %s "
+            "ORDER BY ListItems.position",
+            (list_id,),
+        )
+        list_details["albums"] = cur.fetchall()
+
+        return jsonify(list_details), 200
+    finally:
+        cur.close()
+        conn.close()
 
 @app.route("/api/lists", methods=["POST"])
 @auth_required
