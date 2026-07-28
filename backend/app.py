@@ -16,11 +16,11 @@ CORS(app, origins=["http://localhost:3000"])
 
 def get_db_connection():
     return mysql.connector.connect(
-        host=os.environ["MYSQL_HOST"],
-        port=int(os.environ.get("MYSQL_PORT", 3306)),
-        user=os.environ["MYSQL_USER"],
-        password=os.environ["MYSQL_PASSWORD"],
-        database=os.environ["MYSQL_DATABASE"],
+        host=os.environ["RAILWAY_MYSQL_HOST"],
+        port=int(os.environ["RAILWAY_MYSQL_PORT"]),
+        user=os.environ["RAILWAY_MYSQL_USER"],
+        password=os.environ["RAILWAY_MYSQL_PASSWORD"],
+        database=os.environ["RAILWAY_MYSQL_DATABASE"],
     )
 
 def create_session(cur, user_id):
