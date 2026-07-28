@@ -169,6 +169,57 @@ def logout():
         cur.close()
         conn.close()
 
+#Get all albums
+@app.route("/api/albums", methods=["GET"])
+def get_albums():
+ conn = get_db_connection()
+ cur = conn.cursor(dictionary=True)
+ try:
+     #Select them all
+     cur.execute("SELECT * FROM Albums")
+     albums = cur.fetchall()
+
+     return jsonify(albums), 200
+ finally:
+    cur.close()
+    conn.close()
+
+#get one album
+@app.route("/api/albums/<int:album_id>", methods=["GET"])
+def get_album(album_id):
+  conn = get_db_connection()
+  cur = conn.cursor(dictionary=True)
+
+  try:
+     #get album where album id matches
+     cur.execute(SELECT * FROM Albums WHERE id = %s, (album_id,))
+     album = cur.fetchone()
+
+     #if album doesn't exist
+     if not album:
+         return jsonify({"message": "Album not found"}), 404
+
+     #otherwise
+     return jsonify(album), 200
+  finally:
+     cur.close()
+     conn.close()
+
+#ratings
+@app.route("/api/albums/<int:album_id>/ratings", methods=["GET"])
+def get_ratings(album_id):
+   conn = get_db_connection()
+   cur = conn.cursor(dictionary=True)
+
+   try:
+       #same as above, just get the ratings instead
+       cur.execute("SELECT * FROM Ratings WHERE album_id = %s", (album_id,))
+
+       ratings = cur.fetchall()
+       return jsonify(ratings), 200
+   finally:
+      cur.close()
+      conn.close()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 5001, debug = True)
