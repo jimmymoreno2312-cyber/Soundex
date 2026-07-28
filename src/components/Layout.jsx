@@ -47,6 +47,9 @@ export default function Layout({ children }) {
           </Link>
           {isAuthenticated ? (
             <div className="header-auth-user">
+              <Link to="/lists" className="btn btn-ghost">
+                My Lists
+              </Link>
               <Link to="/profile" className="profile-link">
                 <span className="avatar" aria-hidden="true">
                   {user.username.charAt(0).toUpperCase()}

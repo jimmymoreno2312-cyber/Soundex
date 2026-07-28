@@ -7,6 +7,8 @@ import ArtistDetail from './pages/ArtistDetail';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import AddAlbum from './pages/AddAlbum';
+import MyLists from './pages/MyLists';
+import ListDetail from './pages/ListDetail';
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
           <Route path="/register" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-album" element={<AddAlbum />} />
+          <Route path="/lists" element={<MyLists />} />
+          <Route path="/lists/:id" element={<ListDetail />} />
         </Routes>
       </Layout>
     </AuthProvider>

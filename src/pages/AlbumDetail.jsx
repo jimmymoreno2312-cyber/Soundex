@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAlbumById } from '../api/albums';
 import { getAlbumRatings, submitRating, deleteRating } from '../api/ratings';
+import { getLists, addAlbumToList } from '../api/lists';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -55,6 +56,20 @@ export default function AlbumDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [deleteError, setDeleteError] = useState('');
+
+  const [myLists, setMyLists] = useState([]);
+  const [selectedListId, setSelectedListId] = useState('');
+  const [addToListMessage, setAddToListMessage] = useState('');
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    getLists()
+      .then((data) => setMyLists(data))
+      .catch(() => {
+        // My Lists page shows a real error if this fails; here it just
+        // means the "add to list" control has nothing to offer.
+      });
+  }, [isAuthenticated]);
 
   useEffect(() => {
     let cancelled = false;
@@ -113,6 +128,17 @@ export default function AlbumDetail() {
       setRatings((prev) => prev.filter((r) => r.id !== ratingId));
     } catch (err) {
       setDeleteError(err.message || 'Failed to delete rating');
+    }
+  }
+
+  async function handleAddToList() {
+    if (!selectedListId) return;
+    setAddToListMessage('');
+    try {
+      await addAlbumToList(selectedListId, album.id);
+      setAddToListMessage('Added.');
+    } catch (err) {
+      setAddToListMessage(err.message || 'Failed to add to list');
     }
   }
 
@@ -175,6 +201,41 @@ export default function AlbumDetail() {
           </span>
         </div>
       </div>
+
+      {isAuthenticated && (
+        <div className="add-to-list-row">
+          {myLists.length > 0 ? (
+            <>
+              <select
+                className="add-to-list-select"
+                value={selectedListId}
+                onChange={(e) => setSelectedListId(e.target.value)}
+                aria-label="Choose a list"
+              >
+                <option value="">Add to a list…</option>
+                {myLists.map((list) => (
+                  <option key={list.id} value={list.id}>
+                    {list.title}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleAddToList}
+                disabled={!selectedListId}
+              >
+                Add
+              </button>
+              {addToListMessage && <span className="add-to-list-message">{addToListMessage}</span>}
+            </>
+          ) : (
+            <Link to="/lists" className="empty-state">
+              Create a list to save albums to it.
+            </Link>
+          )}
+        </div>
+      )}
 
       <section className="album-detail-section">
         <h2>Tracklist</h2>

@@ -780,6 +780,209 @@ p {
   color: var(--text-subdued);
 }
 
+/* Add-to-list control on the album page */
+
+.add-to-list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: -12px;
+  margin-bottom: 28px;
+}
+
+.add-to-list-select {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.add-to-list-message {
+  font-size: 13px;
+  color: var(--text-subdued);
+}
+
+/* Lists pages */
+
+.page-heading {
+  margin-bottom: 28px;
+}
+
+.page-heading h1 {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.page-heading p {
+  color: var(--text-subdued);
+  font-size: 14px;
+}
+
+.create-list-card {
+  padding: 20px;
+  margin-bottom: 32px;
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.create-list-card h2,
+.lists-section h2 {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.create-list-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.list-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.list-card:hover {
+  background: var(--bg-highlight);
+  transform: translateY(-2px);
+}
+
+.list-card h3 {
+  font-size: 15px;
+}
+
+.list-card p {
+  font-size: 13px;
+  color: var(--text-subdued);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-card span {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.list-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 16px 0 28px;
+}
+
+.list-detail-header h1 {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.list-detail-header p {
+  color: var(--text-subdued);
+  font-size: 14px;
+}
+
+.list-count {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-subdued);
+}
+
+.list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 32px 0;
+}
+
+.list-albums {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-album-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.list-album-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.list-album-cover {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-highlight);
+}
+
+.list-album-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.list-album-info {
+  min-width: 0;
+}
+
+.list-album-info h2 {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-album-info p {
+  font-size: 13px;
+  color: var(--text-subdued);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-album-info span {
+  font-size: 12px;
+  color: var(--text-subdued);
+}
+
+.list-remove-error {
+  margin-bottom: 12px;
+}
+
 /* Responsive */
 
 @media (max-width: 720px) {
