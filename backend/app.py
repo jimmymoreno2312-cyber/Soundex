@@ -270,7 +270,68 @@ def add_album():
   finally:
      cur.close()
      conn.close()
-                                   
+
+
+@app.route("/api/lists", methods=["GET"])
+@auth_required
+def get_lists():
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        # Get only the logged-in user's lists.
+        cur.execute(
+            "SELECT * FROM Lists WHERE user_id = %s",
+            (g.current_user["user_id"],),
+        )
+        lists = cur.fetchall()
+
+        # Return them as JSON ( [] if they have no lists)
+        return jsonify(lists), 200
+        
+    finally:
+        cur.close()
+        conn.close()
+
+@app.route("/api/lists", methods=["POST"])
+@auth_required
+def create_list():
+    # Read the submitted list details.
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()
+    description = (data.get("description") or "").strip()
+
+    # Check the required title.
+    if not title:
+        return jsonify({"message": "Title is required"}), 400
+    if len(title) > 150:
+        return jsonify({"message": "Title must be 150 characters or fewer"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        # Save the list for the logged-in user.
+        cur.execute(
+            "INSERT INTO Lists (user_id, title, description) VALUES (%s, %s, %s)",
+            (g.current_user["user_id"], title, description),
+        )
+        list_id = cur.lastrowid
+        conn.commit()
+
+        # Get the complete saved list for the response.
+        cur.execute(
+            "SELECT id, user_id, title, description, created_at "
+            "FROM Lists WHERE id = %s",
+            (list_id,),
+        )
+        new_list = cur.fetchone()
+        new_list["created_at"] = new_list["created_at"].isoformat()
+
+        return jsonify(new_list), 201
+    finally:
+        cur.close()
+        conn.close()
+        
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 5001, debug = True)
