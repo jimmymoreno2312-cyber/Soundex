@@ -42,6 +42,9 @@ export default function Layout({ children }) {
         </form>
 
         <div className="header-auth">
+          <Link to "/add-album" className="btn btn-primary">
+            Add Album
+          </div>Link>
           {isAuthenticated ? (
             <div className="header-auth-user">
               <Link to="/profile" className="profile-link">
