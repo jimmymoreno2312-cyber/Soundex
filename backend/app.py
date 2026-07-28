@@ -235,48 +235,46 @@ def add_album():
 
  #contingency
  if not title or not artist_name or not genre_name or not year:
-        return jsonify({"message": "All fields are required"}), 400
+     return jsonify({"message": "All fields are required"}), 400
  
-  conn = get_db_connection()
-  cur = conn.cursor(Dictionary=True)
+ conn = get_db_connection()
+ cur = conn.cursor(dictionary=True)
 
-  try:
-    #find artist
-    cur.execute("SELECT id FROM Artists WHERE name=%s", (artist_name,))
-    artist=cur.fetchone()
+ try:
+   #find artist
+   cur.execute("SELECT id FROM Artists WHERE name=%s", (artist_name,))
+   artist=cur.fetchone()
 
-    #if artist exists, pull, else add it
-    if artist:
+   #if artist exists, pull, else add it
+   if artist:
       artist_id = artist["id"]
-    else:
-      cur.execute("INSERT INTO Artists (name) VALUES (%s)", (artist_name,))
-      artist_id = cur.lastrowid
-    
-     #For genre (same process
-        cur.execute("SELECT id FROM Genres WHERE name = %s", (genre_name,))
-        genre = cur.fetchone()
+   else:
+     cur.execute("INSERT INTO Artists (name) VALUES (%s)", (artist_name,))
+     artist_id = cur.lastrowid
+   
+   cur.execute("SELECT id FROM Genres WHERE name = %s", (genre_name,))
+   genre = cur.fetchone()
 
-        #if exists, pull, else add
-        if genre:
-            genre_id = genre["id"]
-        else:
-            cur.execute("INSERT INTO Genres (name) VALUES (%s)",(genre_name,))
-            genre_id = cur.lastrowid
+   #if exists, pull, else add
+   if genre:
+       genre_id = genre["id"]
+   else:
+       cur.execute("INSERT INTO Genres (name) VALUES (%s)",(genre_name,))
+       genre_id = cur.lastrowid
 
-        #Add album
-        #need release date here though
-        release_date = year
+   #Add album
+   #need release date here though
+   release_date = year
 
-        #put it all together and insert it
-        cur.execute("INSERT INTO Albums(title, artist_id, genre_id, release_date)
-                     VALUES (%s, %s, %s, %s)", (title, artist_id, genre_id, release_date))
+   #put it all together and insert it
+   cur.execute("INSERT INTO Albums(title, artist_id, genre_id, release_date) VALUES (%s, %s, %s, %s)", (title, artist_id, genre_id, release_date))
 
-        conn.commit()
-        return jsonify({"message": "Album added"}), 201
+   conn.commit()
+   return jsonify({"message": "Album added"}), 201
 
-    finally:
-        cur.close()
-        conn.close()
+ finally:
+     cur.close()
+     conn.close()
                                    
 
 if __name__ == "__main__":
