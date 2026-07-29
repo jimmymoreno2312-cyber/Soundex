@@ -7,13 +7,12 @@ from flask_cors import CORS
 from passlib.hash import bcrypt
 from datetime import datetime, timedelta
 from functools import wraps
- 
 
 load_dotenv()
-
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
 
+#Get environment variables and initialize the database connection
 def get_db_connection():
     return mysql.connector.connect(
         host=os.environ["RAILWAY_MYSQL_HOST"],
@@ -22,37 +21,49 @@ def get_db_connection():
         password=os.environ["RAILWAY_MYSQL_PASSWORD"],
         database=os.environ["RAILWAY_MYSQL_DATABASE"],
     )
-
+#Create a session token for a user
 def create_session(cur, user_id):
+    #take the chance and delete expired sessions
     cur.execute("DELETE FROM Sessions WHERE expires_at < NOW()")
+    #create a new session
     token = secrets.token_hex(32)
+    #set expiration time
     expires_at = datetime.now() + timedelta(hours=24)
+    #insert the session into the database
     cur.execute(
         "INSERT INTO Sessions (token, user_id, expires_at) VALUES (%s, %s, %s)",
         (token, user_id, expires_at),
     )
     return token
-
+#Get the token from the Authorization header
 def get_token_from_header():
     token = request.headers.get("Authorization", "")
+    #if the token is not in the correct format, return None
     if not token.startswith("Bearer "):
         return None
-    return token[len("Bearer "):]
-
+    else:
+        #return the token without the "Bearer " prefix
+        return token[len("Bearer "):]
+#Decorator for requiring authentication
+#How to use and how to create an authentication decorator source: https://circleci.com/blog/authentication-decorators-flask/
 def auth_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         token = get_token_from_header()
+        #reject requests with no bearer token
         if not token:
             return jsonify({"message": "Missing bearer token"}), 401
-
         conn = get_db_connection()
+        #create a dictionary cursor for the database
         cur = conn.cursor(dictionary=True)
         try:
+            #look up the session and its owning user, ignoring expired sessions
             cur.execute("SELECT user_id, role FROM Sessions JOIN Users ON Sessions.user_id = Users.id WHERE token = %s AND expires_at > NOW()", (token,))
             current_user = cur.fetchone()
+            #reject if the token doesn't match an active session
             if not current_user:
                 return jsonify({"message": "Invalid or expired token"}), 401
+            #store the user on the request context for the wrapped route
             g.current_user = current_user
             return f(*args, **kwargs)
         finally:
