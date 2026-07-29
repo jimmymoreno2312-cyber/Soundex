@@ -73,42 +73,51 @@ def auth_required(f):
 
 @app.route("/api/auth/register", methods=["POST"])
 def register():
+    #retrieve the JSON data from the request
     data = request.get_json(silent=True) or {}
     username = (data.get("username") or "").strip()
     email = (data.get("email") or "").strip()
     password = data.get("password") or ""
 
+    #ensure all required fields are provided
     if not username or not email or not password:
         return jsonify({"message": "Username, email, and password are required"}), 400
+    #some password security
     if len(password) < 6:
         return jsonify({"message": "Password must be at least 6 characters"}), 400
-
+    #database connection
     conn = get_db_connection()
+    #cursor for the database, dictionary style
     cur = conn.cursor(dictionary=True)
     try:
+        #check if the username or email is already in use
         cur.execute("SELECT id FROM Users WHERE username = %s", (username,))
         if cur.fetchone():
             return jsonify({"message": "Username is already taken"}), 409
         cur.execute("SELECT id FROM Users WHERE email = %s", (email,))
         if cur.fetchone():
             return jsonify({"message": "Email is already registered"}), 409
-
+        #encrypt the password
         password_hash = bcrypt.hash(password)
+        #create the user
         cur.execute(
             "INSERT INTO Users (username, email, password_hash) VALUES (%s, %s, %s)",
             (username, email, password_hash),
         )
+        #get the user's ID
         user_id = cur.lastrowid
+        #create a session for the user
         token = create_session(cur, user_id)
         conn.commit()
-
+        #retrieve the user's information
         cur.execute(
             "SELECT id, username, email, role, created_at FROM Users WHERE id = %s",
             (user_id,),
         )
         user = cur.fetchone()
+        #format the created_at timestamp
         user["created_at"] = user["created_at"].isoformat()
-
+        #return the token and user information, registration successful
         return jsonify({"token": token, "user": user}), 201
     finally:
         cur.close()
@@ -117,32 +126,36 @@ def register():
 
 @app.route("/api/auth/login", methods=["POST"])
 def login():
+    #retrieve the JSON data from the request
     data = request.get_json(silent=True) or {}
     identifier = (data.get("identifier") or "").strip()
     password = data.get("password") or ""
 
+    #extract the identifier (username or email) and password
     if not identifier or not password:
         return jsonify({"message": "Username/email and password are required"}), 400
-
+    #database connection
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
     try:
+        #check if the user exists and the password is correct
         cur.execute(
             "SELECT id, username, email, password_hash, role, created_at FROM Users "
             "WHERE username = %s OR email = %s",
             (identifier, identifier),
         )
         user = cur.fetchone()
-
+        #verify credentials
         if not user or not bcrypt.verify(password, user["password_hash"]):
             return jsonify({"message": "Invalid username/email or password"}), 401
-
+        #create a new session for the user
         token = create_session(cur, user["id"])
         conn.commit()
-
+        #remove the password hash from the user data, we don't want to leak the user's password hash
         user.pop("password_hash")
+        #format the created_at timestamp
         user["created_at"] = user["created_at"].isoformat()
-
+        #return the token and user information, login successful
         return jsonify({"token": token, "user": user}), 200
     finally:
         cur.close()
@@ -151,13 +164,15 @@ def login():
 
 @app.route("/api/auth/logout", methods=["POST"])
 def logout():
+    #retrieve the token from the header
     token = get_token_from_header()
     if not token:
         return jsonify({"message": "Missing bearer token"}), 401
-
+    #database connection
     conn = get_db_connection()
     cur = conn.cursor()
     try:
+        #delete the session from the Sessions table, effectively logging the user out
         cur.execute("DELETE FROM Sessions WHERE token = %s", (token,))
         conn.commit()
         return jsonify({"message": "Logged out"}), 200
