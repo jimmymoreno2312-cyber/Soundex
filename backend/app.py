@@ -71,17 +71,6 @@ def auth_required(f):
             conn.close()
     return decorator
 
-def require_role(*allowed_roles):
-    #must be used under @auth_required
-    def decorator(f):
-        @wraps(f)
-        def decorator_function(*args, **kwargs):
-            if g.current_user["role"] not in allowed_roles:
-                return jsonify({"message": "You don't have permission"}), 403
-            return f(*args, **kwargs)
-        return decorator_function
-    return decorator
-
 @app.route("/api/auth/register", methods=["POST"])
 def register():
     data = request.get_json(silent=True) or {}
@@ -350,6 +339,7 @@ def delete_rating(album_id, rating_id):
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
     try:
+        #look up the rating so we can check it exists and who owns it
         cur.execute(
             "SELECT * FROM Ratings WHERE id = %s AND album_id = %s",(rating_id, album_id),)
         rating = cur.fetchone()
@@ -357,6 +347,7 @@ def delete_rating(album_id, rating_id):
             return jsonify({"message": "Rating not found"}), 404
         is_owner = rating["user_id"] == g.current_user["user_id"]  # Assuming the user is the owner of the rating
         is_moderator = g.current_user["role"] == "moderator"
+        #only the rating's owner or a moderator may delete it
         if not is_owner and not is_moderator:
             return jsonify({"message": "You are not the owner of this rating and not a moderator"}), 403
         cur.execute("DELETE FROM Ratings WHERE id = %s", (rating["id"],))
@@ -369,9 +360,11 @@ def delete_rating(album_id, rating_id):
 #for adding albums
 @app.route("/api/albums", methods=["POST"])
 @auth_required
-@require_role("moderator")
 def add_album():
- 
+  #reject if the current user's role is not moderator
+  if g.current_user["role"] != "moderator":
+     return jsonify({"message": "You don't have permission"}), 403
+
   #get data that was input
   data = request.get_json()
 
