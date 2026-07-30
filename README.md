@@ -164,6 +164,6 @@ Everyone - all of us jumped around between section and section debugging/creatin
 ## Demo account (to connect to DB)
 RAILWAY_MYSQL_HOST=tokaido.proxy.rlwy.net
 RAILWAY_MYSQL_PORT=43228
-RAILWAY_MYSQL_USER=soundex_app
-RAILWAY_MYSQL_PASSWORD=rymmerchant2020@aA
+RAILWAY_MYSQL_USER=root
+RAILWAY_MYSQL_PASSWORD=TfrcThPWavczOeTZpGVXr-ZINYOIkPWoG
 RAILWAY_MYSQL_DATABASE=railway
